@@ -13,7 +13,12 @@ from .composable import (
     ComposableTabular,
     NotCompleted,
 )
-from .result import bootstrap_result, hypothesis_result, model_result, tabular_result
+from .result import (
+    bootstrap_result,
+    hypothesis_result,
+    model_result,
+    tabular_result,
+)
 
 
 __author__ = "Gavin Huttley"

@@ -4,7 +4,11 @@ import numpy
 from numpy.linalg import solve as solve_linear_equations
 
 from .tree_space import TreeEvaluator, ancestry2tree
-from .util import distance_dict_and_names_to_1D, distance_dict_to_1D, triangular_order
+from .util import (
+    distance_dict_and_names_to_1D,
+    distance_dict_to_1D,
+    triangular_order,
+)
 
 
 __author__ = "Peter Maxwell"

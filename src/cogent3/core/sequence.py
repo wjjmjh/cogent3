@@ -43,8 +43,17 @@ from cogent3.maths.stats.contingency import CategoryCounts, TestResult
 from cogent3.maths.stats.number import CategoryCounter
 from cogent3.parse import gff
 from cogent3.util.dict_array import DictArrayTemplate
-from cogent3.util.misc import DistanceFromMatrix, bytes_to_string, get_object_provenance
-from cogent3.util.transform import KeepChars, for_seq, per_longest, per_shortest
+from cogent3.util.misc import (
+    DistanceFromMatrix,
+    bytes_to_string,
+    get_object_provenance,
+)
+from cogent3.util.transform import (
+    KeepChars,
+    for_seq,
+    per_longest,
+    per_shortest,
+)
 
 from .annotation import Feature, Map, _Annotatable
 

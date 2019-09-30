@@ -85,7 +85,10 @@ from cogent3.core.alphabet import Alphabet, CharAlphabet
 from cogent3.core.moltype import IUPAC_gap, IUPAC_missing
 from cogent3.core.sequence import Sequence
 from cogent3.core.tree import TreeError
-from cogent3.evolve.substitution_model import EmpiricalProteinMatrix, Parametric
+from cogent3.evolve.substitution_model import (
+    EmpiricalProteinMatrix,
+    Parametric,
+)
 from cogent3.maths.stats.distribution import binomial_exact
 from cogent3.maths.stats.number import CategoryCounter, CategoryFreqs
 from cogent3.maths.stats.special import ROUND_ERROR

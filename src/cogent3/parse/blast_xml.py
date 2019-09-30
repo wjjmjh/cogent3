@@ -14,7 +14,11 @@ __status__ = "Prototype"
 
 import xml.dom.minidom
 
-from cogent3.parse.blast import BlastResult, MinimalBlastParser9, MinimalPsiBlastParser9
+from cogent3.parse.blast import (
+    BlastResult,
+    MinimalBlastParser9,
+    MinimalPsiBlastParser9,
+)
 
 
 """

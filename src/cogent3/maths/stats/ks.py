@@ -7,7 +7,19 @@ Translated from R 2.4 by Gavin Huttley
 
 from numpy import arange, array, asarray
 from numpy import dot as matrixmultiply
-from numpy import exp, fabs, floor, log, ones, pi, ravel, reshape, sqrt, sum, zeros
+from numpy import (
+    exp,
+    fabs,
+    floor,
+    log,
+    ones,
+    pi,
+    ravel,
+    reshape,
+    sqrt,
+    sum,
+    zeros,
+)
 
 from cogent3.maths.stats.special import combinations
 

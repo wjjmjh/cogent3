@@ -13,10 +13,7 @@ from cogent3.evolve import substitution_model
 from cogent3.evolve.simulate import AlignmentEvolver, random_sequence
 from cogent3.maths.matrix_exponential_integration import expected_number_subs
 from cogent3.maths.matrix_logarithm import is_generator_unique
-from cogent3.maths.measure import (
-    paralinear_continuous_time,
-    paralinear_discrete_time,
-)
+from cogent3.maths.measure import paralinear_continuous_time, paralinear_discrete_time
 from cogent3.recalculation.definition import ParameterController
 from cogent3.util import table
 from cogent3.util.dict_array import DictArrayTemplate

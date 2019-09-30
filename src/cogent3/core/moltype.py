@@ -46,11 +46,7 @@ from numpy import (
     zeros,
 )
 
-from cogent3.core.alignment import (
-    Alignment,
-    ArrayAlignment,
-    SequenceCollection,
-)
+from cogent3.core.alignment import Alignment, ArrayAlignment, SequenceCollection
 from cogent3.core.alphabet import (
     Alphabet,
     AlphabetError,

@@ -4,10 +4,7 @@ from cogent3.core.genetic_code import GeneticCodes
 from cogent3.core.info import Info
 from cogent3.core.moltype import ASCII, DNA, PROTEIN
 from cogent3.parse.record import FieldWrapper
-from cogent3.parse.record_finder import (
-    DelimitedRecordFinder,
-    LabeledRecordFinder,
-)
+from cogent3.parse.record_finder import DelimitedRecordFinder, LabeledRecordFinder
 
 
 __author__ = "Rob Knight"

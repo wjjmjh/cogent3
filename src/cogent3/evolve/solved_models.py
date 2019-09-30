@@ -10,10 +10,7 @@ import numpy
 from numpy.testing import assert_allclose
 
 from cogent3.evolve.predicate import MotifChange
-from cogent3.evolve.substitution_model import (
-    CalcDefn,
-    TimeReversibleNucleotide,
-)
+from cogent3.evolve.substitution_model import CalcDefn, TimeReversibleNucleotide
 from cogent3.maths.matrix_exponentiation import FastExponentiator
 from cogent3.util.modules import ExpectedImportError, importVersionedModule
 

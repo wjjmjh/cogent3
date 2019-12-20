@@ -7,11 +7,12 @@ variables:
   CIBW_BEFORE_BUILD: python -m pip install --upgrade pip
 
 jobs:
-- job: MacOS_Test_py37
-  pool: {vmImage: 'macos-latest'}
+- job: Linux_Test_py37
+  pool: {vmImage: 'ubuntu-latest'}
   steps:
     - task: UsePythonVersion@0
     - bash: |
+        apt-get install libllvm-8-ocaml-dev libllvm8 llvm-8 llvm-8-dev llvm-8-doc llvm-8-examples llvm-8-runtime
         python -m pip install --upgrade pip
         python -m pip install numba
         python -m pip install .[dev] codecov

@@ -2056,7 +2056,13 @@ class Aligned(object):
         if sliced:
             span = self.map.get_covering_span()
             new_seq = new_seq[span.start : span.end]
-        return self.__class__(self.map, new_seq)
+            new_spans = self.map.slice_spans([(span.start, span.end)])
+            parent_length = len(new_seq)
+
+            new_map = self.map.__class__(spans=new_spans, parent_length=parent_length)
+        else:
+            new_map = self.map
+        return self.__class__(new_map, new_seq)
 
     def __repr__(self):
         return "%s of %s" % (repr(self.map), repr(self.data))

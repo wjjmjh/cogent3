@@ -714,8 +714,83 @@ class Map(object):
         spans = [s.reversed_relative_to(self.parent_length) for s in self.spans]
         return Map(spans=spans, parent_length=self.parent_length)
 
-    def gaps(self):
-        """The gaps (lost spans) in this map"""
+    def slice_spans(self, sliced):
+
+        assert isinstance(
+            sliced, list
+        ), "sliced should be a list of tuples specifying sliced segments, e.g. [(10, 20), (25, 30)]"
+
+        res = []
+        for (start, end) in sliced:
+            gaps = self.gaps()
+            non_gaps = self.gaps(complementary=True)
+
+            gaps_coords = [(span.start, span.end) for span in gaps.spans]
+            non_gaps_coords = [(span.start, span.end) for span in non_gaps.spans]
+            coords = gaps_coords + non_gaps_coords
+            coords_dict = dict(coords)
+
+            elem = 0
+            sorted_coords = []
+            for _ in range(len(coords)):
+                sorted_coords.append((elem, coords_dict[elem]))
+                elem = coords_dict[elem]
+
+            offset = 0
+            for i, coord in enumerate(sorted_coords):
+                if coord in gaps_coords:
+                    length = abs(coord[1] - coord[0])
+                    sorted_coords[i] = length
+                    offset += length
+                else:
+                    sorted_coords[i] = (coord[0] - offset, coord[1] - offset)
+
+            try:
+                index = next(
+                    x
+                    for x, val in enumerate(sorted_coords)
+                    if not (isinstance(val, int) or val[1] < start)
+                )
+            except StopIteration:
+                index = 0
+            sorted_coords = sorted_coords[index:]
+
+            spans = []
+            for coord in sorted_coords:
+                if isinstance(coord, int):
+                    spans.append(LostSpan(coord))
+                else:
+                    if coord[0] <= start <= coord[1]:
+                        spans.append(Span(start, coord[1]))
+                    elif coord[0] >= start and coord[1] <= end:
+                        spans.append(Span(coord[0], coord[1]))
+                    elif coord[0] <= end <= coord[1]:
+                        spans.append(Span(coord[0], end))
+                        break
+
+            res += spans
+        return res
+
+    def gaps(self, complementary=False):
+        """return the gaps (lost spans) in this map
+
+        Parameters
+        ----------
+        complementary
+            bool, If True, return the complimentary of lost spans,
+            default is False
+        """
+        locations = []
+        offset = 0
+        for s in self.spans:
+            if not complementary and s.lost:
+                locations.append((offset, offset + s.length))
+            elif complementary and not s.lost:
+                locations.append((offset, offset + s.length))
+            offset += s.length
+        return Map(locations, parent_length=len(self))
+
+    def non_gaps(self):
         locations = []
         offset = 0
         for s in self.spans:

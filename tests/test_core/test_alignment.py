@@ -2691,20 +2691,28 @@ class AlignmentTests(AlignmentBaseTests, TestCase):
             self.assertEqual(len(new_seq.data), 10)
             self.assertTrue(new_seq.data.is_annotated())
             self.assertEqual(len(new_seq.data.annotations), 1)
+            # tests map is sliced
+            seq = aln.named_seqs[name]
+            self.assertNotEqual(new_seq.map.parent_length, seq.map.parent_length)
             # tests the case when sliced argument if False
             new_seq = aln.named_seqs[name].deepcopy(sliced=False)
             self.assertEqual(len(new_seq.data), len(aln.named_seqs[name].data))
             self.assertTrue(new_seq.data.is_annotated())
+            # tests map is not sliced
+            self.assertEqual(new_seq.map.parent_length, seq.map.parent_length)
         # for these species, each has an annotation outside slice
         for name in ["NineBande", "DogFaced"]:
             new_seq = aln.named_seqs[name].deepcopy()
             self.assertEqual(len(new_seq.data), 10)
             self.assertFalse(new_seq.data.is_annotated())
+            seq = aln.named_seqs[name]
+            self.assertNotEqual(new_seq.map.parent_length, seq.map.parent_length)
             # tests the case when sliced argument if False
             new_seq = aln.named_seqs[name].deepcopy(sliced=False)
             self.assertEqual(len(new_seq.data), len(aln.named_seqs[name].data))
             self.assertTrue(new_seq.data.is_annotated())
             self.assertEqual(len(new_seq.data.annotations), 1)
+            self.assertEqual(new_seq.map.parent_length, seq.map.parent_length)
 
         # add another human annotation that is outside slice
         aln.named_seqs["Human"].data.add_annotation(
@@ -2712,6 +2720,9 @@ class AlignmentTests(AlignmentBaseTests, TestCase):
         )
         # tests the case when sliced argument if False regarding the Human sequence
         new_seq = aln.named_seqs["Human"].deepcopy(sliced=False)
+        self.assertEqual(
+            new_seq.map.parent_length, aln.named_seqs["Human"].map.parent_length
+        )
         self.assertEqual(len(new_seq.data), len(aln.named_seqs["Human"].data))
         self.assertTrue(new_seq.data.is_annotated())
         self.assertEqual(len(new_seq.data.annotations), 2)

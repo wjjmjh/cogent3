@@ -751,9 +751,9 @@ class Map(object):
                     for x, val in enumerate(sorted_coords)
                     if not (isinstance(val, int) or val[1] < start)
                 )
+                sorted_coords = sorted_coords[index:]
             except StopIteration:
-                index = 0
-            sorted_coords = sorted_coords[index:]
+                sorted_coords = []
 
             spans = []
             for coord in sorted_coords:
@@ -786,15 +786,6 @@ class Map(object):
             if not complementary and s.lost:
                 locations.append((offset, offset + s.length))
             elif complementary and not s.lost:
-                locations.append((offset, offset + s.length))
-            offset += s.length
-        return Map(locations, parent_length=len(self))
-
-    def non_gaps(self):
-        locations = []
-        offset = 0
-        for s in self.spans:
-            if s.lost:
                 locations.append((offset, offset + s.length))
             offset += s.length
         return Map(locations, parent_length=len(self))

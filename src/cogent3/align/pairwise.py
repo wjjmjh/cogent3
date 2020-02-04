@@ -15,8 +15,9 @@ from cogent3.align.traceback import alignment_traceback, map_traceback
 from cogent3.core.alignment import Aligned
 from cogent3.evolve.likelihood_tree import LikelihoodTreeEdge
 from cogent3.util.modules import ExpectedImportError, importVersionedModule
-from cogent3.util.warning import deprecated, discontinued
 
+from . import pairwise_pogs_numba as align_module
+from . import pairwise_seqs_numba as seq_align_module
 from .indel_positions import leaf2pog
 
 
@@ -35,14 +36,6 @@ def _importedPyrexAligningModule(name):
     except ExpectedImportError:
         return None
 
-
-try:
-    from . import (
-        pairwise_pogs_numba as align_module,
-        pairwise_seqs_numba as seq_align_module,
-    )
-except ImportError:
-    align_module = seq_align_module = None
 
 # align_module = _importedPyrexAligningModule('_pairwise_pogs')
 # seq_align_module = _importedPyrexAligningModule('_pairwise_seqs')
@@ -105,108 +98,6 @@ class PointerEncoding(object):
 DEBUG = False
 
 
-def py_calc_rows(
-    plan,
-    x_index,
-    y_index,
-    i_low,
-    i_high,
-    j_low,
-    j_high,
-    preds,
-    state_directions,
-    T,
-    xgap_scores,
-    ygap_scores,
-    match_scores,
-    rows,
-    track,
-    track_enc,
-    viterbi,
-    local=False,
-    use_scaling=False,
-    use_logs=False,
-):
-    """Pure python version of the dynamic programming algorithms
-    Forward and Viterbi.  Works on sequences and POGs.  Unli"""
-    if use_scaling:
-        warnings.warn("Pure python version of DP code can suffer underflows")
-        # because it ignores 'exponents', the Pyrex version doesn't.
-    source_states = list(range(len(T)))
-    BEGIN = 0
-    ERROR = len(T)
-    (rows, exponents) = rows
-    if use_logs:
-        neutral_score = 0.0
-        impossible = -numpy.inf
-    else:
-        neutral_score = 1.0
-        impossible = 0.0
-    best_score = impossible
-    for i in range(i_low, i_high):
-        x = x_index[i]
-        i_sources = preds[0][i]
-        current_row = rows[plan[i]]
-        current_row[:, 0] = impossible
-        if i == 0 and not local:
-            current_row[0, 0] = neutral_score
-        for j in range(j_low, j_high):
-            y = y_index[j]
-            j_sources = preds[1][j]
-            for (state, bin, dx, dy) in state_directions:
-                if local and dx and dy:
-                    cumulative_score = T[BEGIN, state]
-                    pointer = (dx, dy, BEGIN)
-                else:
-                    cumulative_score = impossible
-                    pointer = (0, 0, ERROR)
-                for (a, prev_i) in enumerate([[i], i_sources][dx]):
-                    source_row = rows[plan[prev_i]]
-                    for (b, prev_j) in enumerate([[j], j_sources][dy]):
-                        source_posn = source_row[prev_j]
-                        for prev_state in source_states:
-                            prev_value = source_posn[prev_state]
-                            transition = T[prev_state, state]
-                            if viterbi:
-                                if use_logs:
-                                    candidate = prev_value + transition
-                                else:
-                                    candidate = prev_value * transition
-                                # if DEBUG:
-                                #    print prev_state, prev_value, state
-                                if candidate > cumulative_score:
-                                    cumulative_score = candidate
-                                    pointer = (a + dx, b + dy, prev_state)
-                            else:
-                                cumulative_score += prev_value * transition
-                if dx and dy:
-                    d_score = match_scores[bin, x, y]
-                elif dx:
-                    d_score = xgap_scores[bin, x]
-                elif dy:
-                    d_score = ygap_scores[bin, y]
-                else:
-                    d_score = neutral_score
-                # if DEBUG:
-                #    print (dx, dy), d_score, cumulative_score
-                if use_logs:
-                    current_row[j, state] = cumulative_score + d_score
-                else:
-                    current_row[j, state] = cumulative_score * d_score
-                if track is not None:
-                    track[i, j, state] = (numpy.array(pointer) << track_enc).sum()
-                if (i == i_high - 1 and j == j_high - 1 and not local) or (
-                    local and dx and dy and current_row[j, state] > best_score
-                ):
-                    (best, best_score) = (((i, j), state), current_row[j, state])
-    # if DEBUG:
-    #    print i_low, i_high, j_low, j_high
-    #    print 'best_score %5.1f  at  %s' % (numpy.log(best_score), best)
-    if not use_logs:
-        best_score = numpy.log(best_score)
-    return best + (best_score,)
-
-
 class TrackBack(object):
     def __init__(self, tlist):
         self.tlist = tlist
@@ -252,10 +143,9 @@ class Pair(object):
 
         if some_pogs and align_module is not None:
             aligner = align_module.calc_rows
-        elif (not some_pogs) and seq_align_module is not None:
+
+        if (not some_pogs) and seq_align_module is not None:
             aligner = seq_align_module.calc_rows
-        else:
-            aligner = py_calc_rows
 
         self.both_seqs = not some_pogs
         self.aligner = aligner
